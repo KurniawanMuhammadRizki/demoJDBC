@@ -115,17 +115,41 @@ public class WalletService {
                 })
                 .collect(Collectors.toList());
     }
-    public StatusWalletDto switchActiveWallet(Long walletId, long userId) {
+    public StatusWalletDto switchActiveWallet(Long walletId, Long userId) {
+        Optional<Wallet> walletOpt = walletRepository.findById(walletId);
+        if (walletOpt.isEmpty()) {
+            throw new DataNotFoundException("Wallet not found");
+        }
 
+        Wallet wallet = walletOpt.get();
+//        if (!wallet.getUser().getId().equals(userId)) {
+//            String walletID = wallet.getUser().getId().toString();
+//            throw new DataNotFoundException("Wallet does not belong to the user " + walletID);
+//        }
 
-        Wallet updatedWallet = walletRepository.save(wallet);
+        List<Wallet> userWallets = walletRepository.findByUserId(userId);
+        for (Wallet w : userWallets) {
+            w.setActive(false);
+        }
+        walletRepository.saveAll(userWallets);
 
-        StatusWalletDto statusWalletDto = new StatusWalletDto();
-        statusWalletDto.setId(updatedWallet.getId());
-        statusWalletDto.setName(updatedWallet.getName());
-        statusWalletDto.setActive(updatedWallet.isActive());
-        return statusWalletDto;
+        if (wallet.isActive()) {
+            wallet.setActive(false);
+            wallet.setUpdatedAt(Instant.now());
+            walletRepository.save(wallet);
+            throw new ApplicationException(HttpStatus.OK, "You are not have active wallet");
+        } else {
+            wallet.setActive(true);
+            wallet.setUpdatedAt(Instant.now());
+            Wallet updatedWallet = walletRepository.save(wallet);
+            StatusWalletDto statusWalletDto = new StatusWalletDto();
+            statusWalletDto.setId(updatedWallet.getId());
+            statusWalletDto.setName(updatedWallet.getName());
+            statusWalletDto.setActive(updatedWallet.isActive());
+            return statusWalletDto;
+        }
     }
+
     public WalletDto getWalletById(Long id) {
         Optional<Wallet> wallet = walletRepository.findById(id);
         if(wallet.isEmpty()){
@@ -159,8 +183,6 @@ public class WalletService {
         statusWalletDto.setActive(updatedWallet.isActive());
         return statusWalletDto;
     }
-
-
 
     public StatusWalletDto setNotActiveWallet(Long walletId) {
         Optional<Wallet> walletOpt = walletRepository.findById(walletId);

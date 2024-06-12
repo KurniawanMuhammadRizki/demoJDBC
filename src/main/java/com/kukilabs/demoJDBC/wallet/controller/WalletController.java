@@ -3,6 +3,7 @@ package com.kukilabs.demoJDBC.wallet.controller;
 import com.kukilabs.demoJDBC.responses.Response;
 import com.kukilabs.demoJDBC.wallet.dto.EditWalletDto;
 import com.kukilabs.demoJDBC.wallet.dto.StatusWalletDto;
+import com.kukilabs.demoJDBC.wallet.dto.SwitchActiveWalletDto;
 import com.kukilabs.demoJDBC.wallet.dto.WalletDto;
 import com.kukilabs.demoJDBC.wallet.entity.Wallet;
 import com.kukilabs.demoJDBC.wallet.service.WalletService;
@@ -57,6 +58,7 @@ public class WalletController {
         StatusWalletDto updatedWallet = walletService.setActiveWallet(walletId);
         return Response.successfulResponse("Wallet set as active", updatedWallet);
     }
+
     @PutMapping("{walletId}/set-not-active")
     public ResponseEntity<Response<StatusWalletDto>> setNotActiveWallet(@PathVariable Long walletId) {
         StatusWalletDto updatedWallet = walletService.setNotActiveWallet(walletId);
@@ -64,9 +66,9 @@ public class WalletController {
     }
 
     @PutMapping("/switch-active")
-    public ResponseEntity<Response<StatusWalletDto>> switchActiveWallet(@RequestBody Long walletId, Long userId) {
-        StatusWalletDto updatedWallet = walletService.setNotActiveWallet(walletId);
-        return Response.successfulResponse("Wallet set as not active", updatedWallet);
+    public ResponseEntity<Response<StatusWalletDto>> switchActiveWallet(@RequestBody SwitchActiveWalletDto switchActiveWalletDto) {
+        StatusWalletDto updatedWallet = walletService.switchActiveWallet(switchActiveWalletDto.getWalletId(), switchActiveWalletDto.getUserid());
+        return Response.successfulResponse("Wallet switched successfully", updatedWallet);
     }
 
 
