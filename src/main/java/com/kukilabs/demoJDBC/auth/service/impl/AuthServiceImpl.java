@@ -1,5 +1,6 @@
 package com.kukilabs.demoJDBC.auth.service.impl;
 
+import com.kukilabs.demoJDBC.auth.entity.UserAuth;
 import com.kukilabs.demoJDBC.auth.service.AuthService;
 import com.kukilabs.demoJDBC.user.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -32,8 +33,10 @@ public class AuthServiceImpl implements AuthService {
 
         String scope = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
 
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).expiresAt(now.plus(12, ChronoUnit.HOURS)).subject(authentication.getName()).claim("scope", scope).build();
+        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).expiresAt(now.plus(12, ChronoUnit.HOURS)).subject(authentication.getName()).claim("scope", scope).claim("userId", scope).build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
+
+
 }

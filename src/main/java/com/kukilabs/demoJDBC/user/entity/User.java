@@ -34,24 +34,21 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull(message = "pin empty")
-    @Column(name = "pin", nullable = false)
+    @Column(name = "pin")
     private int pin;
 
     @NotNull(message = "language empty")
     @Column(name = "language_id", nullable = false)
     private int languageId;
 
-    @NotNull(message = "profileImgUrl empty")
-    @Column(name = "profile_img_url", nullable = false)
+
+    @Column(name = "profile_img_url")
     private String profileImgUrl;
 
-    @NotNull(message = "quotes empty")
-    @Column(name = "quotes", nullable = false)
+    @Column(name = "quotes")
     private String quotes;
 
-    @NotNull(message = "get_started empty")
-    @Column(name = "get_started", nullable = false)
+    @Column(name = "get_started")
     private Instant getStarted;
 
     @NotNull(message = "created_at empty")
@@ -62,6 +59,6 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     private Instant deletedAt;
 }

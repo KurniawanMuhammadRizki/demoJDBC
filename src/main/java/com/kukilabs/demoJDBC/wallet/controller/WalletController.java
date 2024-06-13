@@ -1,6 +1,9 @@
 package com.kukilabs.demoJDBC.wallet.controller;
 
+import com.kukilabs.demoJDBC.auth.entity.UserAuth;
 import com.kukilabs.demoJDBC.responses.Response;
+import com.kukilabs.demoJDBC.user.entity.User;
+import com.kukilabs.demoJDBC.user.service.UserService;
 import com.kukilabs.demoJDBC.wallet.dto.EditWalletDto;
 import com.kukilabs.demoJDBC.wallet.dto.StatusWalletDto;
 import com.kukilabs.demoJDBC.wallet.dto.SwitchActiveWalletDto;
@@ -11,6 +14,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +26,28 @@ import java.util.List;
 @RequestMapping("/api/v1/wallet")
 public class WalletController {
     private final WalletService walletService;
-    public WalletController(WalletService walletService){
+    private final UserService userService;
+
+    public WalletController(WalletService walletService, UserService userService){
         this.walletService = walletService;
+        this.userService = userService;
+    }
+
+    public Long getAuthorizedUserId(){
+        SecurityContext ctx = SecurityContextHolder.getContext();
+        Authentication auth = ctx.getAuthentication();
+        String requesterEmail = auth.getName();
+        User user = userService.getUserByEmail(requesterEmail);
+        return user.getId();
     }
 
     @PostMapping
     public ResponseEntity<Response<Wallet>> createWallet(@Validated @RequestBody WalletDto wallet){
-        var createdWallet = walletService.createWallet(wallet);
+        Long userId = getAuthorizedUserId();
+        var createdWallet = walletService.createWallet(wallet, userId);
         return Response.successfulResponse("Wallet created!");
     }
+
     @PutMapping("{userId}")
     public ResponseEntity<Response<EditWalletDto>> editWallet(@Valid @RequestBody EditWalletDto editWalletDto, @PathVariable long userId){
         var editWallet = walletService.editWallet(editWalletDto,userId);
@@ -41,11 +60,14 @@ public class WalletController {
         return Response.successfulResponse("All wallet fetched", wallets);
     }
 
-    @GetMapping("user/{id}")
-    public ResponseEntity<Response<List<WalletDto>>> getWalletByUserId(@PathVariable Long id){
-        List<WalletDto> wallets = walletService.getWalletsByUserId(id);
+    @GetMapping("user")
+    public ResponseEntity<Response<List<WalletDto>>> getWalletByUserId(){
+       Long userId = getAuthorizedUserId();
+        List<WalletDto> wallets = walletService.getWalletsByUserId(userId);
         return Response.successfulResponse("Wallet Found", wallets);
     }
+
+
 
     @GetMapping("{id}")
     public ResponseEntity<Response<WalletDto>> getWalletByWalletId(@PathVariable Long id){
@@ -67,13 +89,9 @@ public class WalletController {
 
     @PutMapping("/switch-active")
     public ResponseEntity<Response<StatusWalletDto>> switchActiveWallet(@RequestBody SwitchActiveWalletDto switchActiveWalletDto) {
-        StatusWalletDto updatedWallet = walletService.switchActiveWallet(switchActiveWalletDto.getWalletId(), switchActiveWalletDto.getUserid());
+        Long userId = getAuthorizedUserId();
+        StatusWalletDto updatedWallet = walletService.switchActiveWallet(switchActiveWalletDto.getWalletId(),userId );
         return Response.successfulResponse("Wallet switched successfully", updatedWallet);
     }
 
-
-//    @PostMapping
-//    public Wallet createWallet(@RequestBody Wallet wallet){
-//        return walletService.createWallet(wallet);
-//    }
 }

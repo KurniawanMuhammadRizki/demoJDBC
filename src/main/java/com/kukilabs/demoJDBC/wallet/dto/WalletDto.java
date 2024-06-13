@@ -21,7 +21,7 @@ public class WalletDto {
 
     @NotNull(message = "Currency cannot be null")
     private int currencyId;
-    @NotNull(message = "User id cannot be null")
+
     private Long userId;
 
     private boolean isActive;
