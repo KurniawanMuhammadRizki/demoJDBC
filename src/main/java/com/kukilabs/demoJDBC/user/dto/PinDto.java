@@ -8,5 +8,5 @@ import lombok.Data;
 public class PinDto {
     @NotNull(message = "Pin is required")
     @Size(min = 6, max = 6, message = "Pin must be exactly six digits")
-    private Integer pin;
+    private String pin;
 }

@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
             return existingKey;
         }
 
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).expiresAt(now.plus(12, ChronoUnit.HOURS)).subject(authentication.getName()).claim("scope", scope).claim("userId", scope).build();
+        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).expiresAt(now.plus(1, ChronoUnit.HOURS    )).subject(authentication.getName()).claim("scope", scope).claim("userId", scope).build();
 
         var jwt =  jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         authRedisRepository.saveJwtKey(authentication.getName(), jwt);

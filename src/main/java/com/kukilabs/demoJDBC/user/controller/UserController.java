@@ -1,7 +1,9 @@
 package com.kukilabs.demoJDBC.user.controller;
 
 import com.kukilabs.demoJDBC.responses.Response;
+import com.kukilabs.demoJDBC.user.dto.EditProfileDto;
 import com.kukilabs.demoJDBC.user.dto.PasswordDto;
+import com.kukilabs.demoJDBC.user.dto.PinDto;
 import com.kukilabs.demoJDBC.user.dto.RegisterDto;
 import com.kukilabs.demoJDBC.user.entity.User;
 import com.kukilabs.demoJDBC.user.service.UserService;
@@ -42,10 +44,17 @@ public class UserController {
     }
 
     @PostMapping("/setup-pin")
-    public ResponseEntity<Response<User>> setupPin(@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<Response<User>> setupPin(@RequestBody PinDto pin) {
         Long userId = getAuthorizedUserId();
-        userService.changePassword(passwordDto, userId);
+        userService.setUpPin(pin, userId);
         return Response.successfulResponse("password change successfully");
+    }
+
+    @PostMapping("/edit-profile")
+    public ResponseEntity<Response<User>> editProfile(@RequestBody EditProfileDto editProfileDto) {
+        Long userId = getAuthorizedUserId();
+        userService.editProfile(editProfileDto, userId);
+        return Response.successfulResponse("Profile updated successfully");
     }
 
 

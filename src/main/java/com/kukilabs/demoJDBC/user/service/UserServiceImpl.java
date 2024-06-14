@@ -2,6 +2,7 @@ package com.kukilabs.demoJDBC.user.service;
 
 import com.kukilabs.demoJDBC.exceptions.ApplicationException;
 import com.kukilabs.demoJDBC.exceptions.DataNotFoundException;
+import com.kukilabs.demoJDBC.user.dto.EditProfileDto;
 import com.kukilabs.demoJDBC.user.dto.PasswordDto;
 import com.kukilabs.demoJDBC.user.dto.PinDto;
 import com.kukilabs.demoJDBC.user.dto.RegisterDto;
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
         var password = passwordEncoder.encode(user.getPassword());
         Instant now = Instant.now();
         newUser.setPassword(password);
-        newUser.setPin(0);
+        newUser.setPin(" ");
         newUser.setProfileImgUrl(" ");
         newUser.setCreatedAt(now);
         newUser.setUpdatedAt(now);
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(PasswordDto passwordDto, Long userId){
+        Instant now = Instant.now();
         Optional<User> user = userRepository.findById(userId);
         if(user.isEmpty()){
             throw new DataNotFoundException("User not found");
@@ -64,9 +66,44 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException("Password not match");
         }
 
+
         var encryptedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
         User newUser = user.get();
+        newUser.setUpdatedAt(now);
         newUser.setPassword(encryptedPassword);
+        userRepository.save(newUser);
+    }
+
+    @Override
+    public void setUpPin(PinDto pin, Long userId){
+        Instant now = Instant.now();
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()){
+            throw new DataNotFoundException("User not found");
+        }
+
+        var encryptedPin = passwordEncoder.encode(pin.getPin());
+        User newUser = user.get();
+        newUser.setUpdatedAt(now);
+        newUser.setPin(encryptedPin);
+        userRepository.save(newUser);
+    }
+
+    @Transactional
+    public void editProfile(EditProfileDto editProfileDto, Long userId){
+        Instant now = Instant.now();
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()){
+            throw new DataNotFoundException("User not found");
+        }
+
+        User newUser = user.get();
+        newUser.setName(editProfileDto.getName());
+        newUser.setEmail(editProfileDto.getEmail());
+        newUser.setQuotes(editProfileDto.getQuotes());
+        newUser.setProfileImgUrl(editProfileDto.getProfilePhotoUrl());
+        newUser.setLanguageId(editProfileDto.getLanguageId());
+        newUser.setUpdatedAt(now);
         userRepository.save(newUser);
     }
 }

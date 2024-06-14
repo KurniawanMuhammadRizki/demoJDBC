@@ -1,9 +1,13 @@
 package com.kukilabs.demoJDBC.auth.controller;
 
 import com.kukilabs.demoJDBC.auth.dto.LoginRequestDto;
+import com.kukilabs.demoJDBC.auth.dto.LoginResponseDto;
 import com.kukilabs.demoJDBC.auth.entity.UserAuth;
 import com.kukilabs.demoJDBC.auth.service.AuthService;
 import com.kukilabs.demoJDBC.responses.Response;
+import jakarta.servlet.http.Cookie;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +38,17 @@ public class AuthController {
 
         UserAuth userDetails = (UserAuth) authentication.getPrincipal();
         String token = authService.generateToken(authentication);
-        return Response.successfulResponse("login success", token);
+
+        LoginResponseDto response = new LoginResponseDto();
+        response.setMessage("User logged in successfully");
+        response.setToken(token);
+
+        Cookie cookie = new Cookie("sid", token);
+        HttpHeaders header = new HttpHeaders();
+        header.add("Set-Cookie", cookie.getName() + "=" + cookie.getValue() + "; Path=/; HttpOnly");
+        return ResponseEntity.status(HttpStatus.OK).headers(header).body(response);
+
+        //return Response.successfulResponse("login success", token);
     }
 
 }

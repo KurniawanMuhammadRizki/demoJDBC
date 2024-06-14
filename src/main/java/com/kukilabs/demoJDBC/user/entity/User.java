@@ -35,7 +35,7 @@ public class User {
     private String password;
 
     @Column(name = "pin")
-    private int pin;
+    private String pin;
 
     @NotNull(message = "language empty")
     @Column(name = "language_id", nullable = false)
