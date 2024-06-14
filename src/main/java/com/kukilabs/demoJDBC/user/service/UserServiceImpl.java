@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if(!passwordEncoder.matches(passwordDto.getCurrentPassword(), user.get().getPassword())){
-            throw new ApplicationException("Password not found");
+            throw new ApplicationException("Password not match");
         }
 
         var encryptedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
