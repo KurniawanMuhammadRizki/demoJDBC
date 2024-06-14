@@ -2,10 +2,7 @@ package com.kukilabs.demoJDBC.user.service;
 
 import com.kukilabs.demoJDBC.exceptions.ApplicationException;
 import com.kukilabs.demoJDBC.exceptions.DataNotFoundException;
-import com.kukilabs.demoJDBC.user.dto.EditProfileDto;
-import com.kukilabs.demoJDBC.user.dto.PasswordDto;
-import com.kukilabs.demoJDBC.user.dto.PinDto;
-import com.kukilabs.demoJDBC.user.dto.RegisterDto;
+import com.kukilabs.demoJDBC.user.dto.*;
 import com.kukilabs.demoJDBC.user.entity.User;
 import com.kukilabs.demoJDBC.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -68,6 +65,20 @@ public class UserServiceImpl implements UserService {
 
 
         var encryptedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
+        User newUser = user.get();
+        newUser.setUpdatedAt(now);
+        newUser.setPassword(encryptedPassword);
+        userRepository.save(newUser);
+    }
+
+    public void forgetPassword(ForgetPasswordDto forgetPasswordDto){
+        Instant now = Instant.now();
+        Optional<User> user = userRepository.findByEmail(forgetPasswordDto.getEmail());
+        if(user.isEmpty()){
+            throw new DataNotFoundException("Email not found");
+        }
+        var encryptedPassword = passwordEncoder.encode(forgetPasswordDto.getPassword());
+
         User newUser = user.get();
         newUser.setUpdatedAt(now);
         newUser.setPassword(encryptedPassword);

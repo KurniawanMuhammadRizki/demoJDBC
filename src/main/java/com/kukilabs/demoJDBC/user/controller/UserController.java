@@ -1,10 +1,7 @@
 package com.kukilabs.demoJDBC.user.controller;
 
 import com.kukilabs.demoJDBC.responses.Response;
-import com.kukilabs.demoJDBC.user.dto.EditProfileDto;
-import com.kukilabs.demoJDBC.user.dto.PasswordDto;
-import com.kukilabs.demoJDBC.user.dto.PinDto;
-import com.kukilabs.demoJDBC.user.dto.RegisterDto;
+import com.kukilabs.demoJDBC.user.dto.*;
 import com.kukilabs.demoJDBC.user.entity.User;
 import com.kukilabs.demoJDBC.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +52,12 @@ public class UserController {
         Long userId = getAuthorizedUserId();
         userService.editProfile(editProfileDto, userId);
         return Response.successfulResponse("Profile updated successfully");
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity<Response<User>> forgetPassword(@RequestBody ForgetPasswordDto forgetPasswordDto) {
+        userService.forgetPassword(forgetPasswordDto);
+        return Response.successfulResponse("Password updated successfully");
     }
 
 

@@ -1,9 +1,6 @@
 package com.kukilabs.demoJDBC.user.service;
 
-import com.kukilabs.demoJDBC.user.dto.EditProfileDto;
-import com.kukilabs.demoJDBC.user.dto.PasswordDto;
-import com.kukilabs.demoJDBC.user.dto.PinDto;
-import com.kukilabs.demoJDBC.user.dto.RegisterDto;
+import com.kukilabs.demoJDBC.user.dto.*;
 import com.kukilabs.demoJDBC.user.entity.User;
 
 public interface UserService {
@@ -15,4 +12,6 @@ public interface UserService {
     void changePassword(PasswordDto passwordDto, Long userId);
     void setUpPin(PinDto pin, Long userId);
     void editProfile(EditProfileDto editProfileDto, Long userId);
+
+    void forgetPassword(ForgetPasswordDto forgetPasswordDto);
 }
